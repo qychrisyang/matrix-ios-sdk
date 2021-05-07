@@ -418,7 +418,8 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
         NSDictionary *content = @{
                                   @"call_id": _callId,
                                   @"version": kMXCallVersion,
-                                  @"party_id": self.partyId
+                                  @"party_id": self.partyId,
+                                  @"isVideo": @(_isVideoCall)
                                   };
         
         [_callSignalingRoom sendEventOfType:kMXEventTypeStringCallReject content:content localEcho:nil success:nil failure:^(NSError *error) {
@@ -447,12 +448,18 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
     if (self.state != MXCallStateEnded)
     {
         // Send the hangup event
-        NSDictionary *content = @{
-                                  @"call_id": _callId,
-                                  @"version": kMXCallVersion,
-                                  @"party_id": self.partyId,
-                                  @"reason": [MXTools callHangupReasonString:reason]
-                                  };
+        NSMutableDictionary *content = [NSMutableDictionary dictionaryWithDictionary:@{
+            @"call_id": _callId,
+            @"version": kMXCallVersion,
+            @"party_id": self.partyId,
+            @"isVideo": @(_isVideoCall),
+            @"reason": [MXTools callHangupReasonString:reason]
+        }];
+        
+        if (self.duration > 0) {
+            [content setObject:@(self.duration) forKey:@"duration"];
+        }
+        
         [_callSignalingRoom sendEventOfType:kMXEventTypeStringCallHangup content:content localEcho:nil success:^(NSString *eventId) {
             [[MXSDKOptions sharedInstance].analyticsDelegate trackValue:@(reason)
                                                                category:kMXAnalyticsVoipCategory
