@@ -642,6 +642,16 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
 
 #pragma mark - Properties
 
+#if __has_include(<WebRTC/WebRTC.h>)
+- (void)setPeerConnectionDelegate:(id<RTCPeerConnectionDelegate>)peerConnectionDelegate {
+    if (peerConnectionDelegate != _peerConnectionDelegate)
+    {
+        _peerConnectionDelegate = peerConnectionDelegate;
+        callStackCall.peerConnectionDelegate = peerConnectionDelegate;
+    }
+}
+#endif
+
 - (void)setSelectedAnswer:(MXEvent *)selectedAnswer
 {
     if (_selectedAnswer == selectedAnswer)

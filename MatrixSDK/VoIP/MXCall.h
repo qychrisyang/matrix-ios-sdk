@@ -22,6 +22,10 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
+#if __has_include(<WebRTC/WebRTC.h>)
+#import <WebRTC/RTCPeerConnection.h>
+#endif
+
 #import "MXCallStackCall.h"
 #import "MXCallHangupEventContent.h"
 
@@ -334,6 +338,13 @@ extern NSString *const kMXCallSupportsTransferringStatusDidChange;
  The delegate.
  */
 @property (nonatomic, weak) id<MXCallDelegate> delegate;
+
+#if __has_include(<WebRTC/WebRTC.h>)
+/**
+ The RTCPeerConnectionDelegate.
+ */
+@property (nonatomic, nullable, weak) id<RTCPeerConnectionDelegate> peerConnectionDelegate;
+#endif
 
 @end
 

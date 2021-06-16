@@ -22,6 +22,10 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
+#if __has_include(<WebRTC/WebRTC.h>)
+#import <WebRTC/RTCPeerConnection.h>
+#endif
+
 #import <AVFoundation/AVCaptureDevice.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -170,6 +174,13 @@ NS_ASSUME_NONNULL_BEGIN
  The delegate.
  */
 @property (nonatomic, nullable, weak) id<MXCallStackCallDelegate> delegate;
+
+#if __has_include(<WebRTC/WebRTC.h>)
+/**
+ The RTCPeerConnectionDelegate.
+ */
+@property (nonatomic, nullable, weak) id<RTCPeerConnectionDelegate> peerConnectionDelegate;
+#endif
 
 /**
  The UIView that receives frames from the user's camera.

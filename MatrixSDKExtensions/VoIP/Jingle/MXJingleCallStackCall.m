@@ -75,7 +75,7 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
 @end
 
 @implementation MXJingleCallStackCall
-@synthesize selfVideoView, remoteVideoView, audioToSpeaker, cameraPosition, delegate;
+@synthesize selfVideoView, remoteVideoView, audioToSpeaker, cameraPosition, delegate, peerConnectionDelegate;
 
 - (instancetype)initWithFactory:(RTCPeerConnectionFactory *)factory
 {
@@ -461,6 +461,8 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
  didChangeSignalingState:(RTCSignalingState)stateChanged
 {
     NSLog(@"[MXJingleCallStackCall] didChangeSignalingState: %tu", stateChanged);
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didChangeSignalingState:stateChanged];
 }
 
 // Triggered when media is received on a new stream from remote peer.
@@ -468,6 +470,8 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
           didAddStream:(RTCMediaStream *)stream
 {
     NSLog(@"[MXJingleCallStackCall] didAddStream");
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didAddStream:stream];
 }
 
 // Triggered when a remote peer close a stream.
@@ -475,6 +479,8 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
        didRemoveStream:(RTCMediaStream *)stream
 {
     NSLog(@"[MXJingleCallStackCall] didRemoveStream");
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didRemoveStream:stream];
 }
 
 - (void)peerConnection:(RTCPeerConnection *)peerConnection didAddReceiver:(RTCRtpReceiver *)rtpReceiver streams:(NSArray<RTCMediaStream *> *)mediaStreams
@@ -496,17 +502,23 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
             [self->remoteVideoTrack addRenderer:self->remoteJingleVideoView];
         });
     }
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didAddReceiver:rtpReceiver streams: mediaStreams];
 }
 
 - (void)peerConnection:(RTCPeerConnection *)peerConnection didRemoveReceiver:(RTCRtpReceiver *)rtpReceiver
 {
     NSLog(@"[MXJingleCallStackCall] didRemoveReceiver");
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didRemoveReceiver:rtpReceiver];
 }
 
 // Triggered when renegotiation is needed, for example the ICE has restarted.
 - (void)peerConnectionShouldNegotiate:(RTCPeerConnection *)peerConnection
 {
     NSLog(@"[MXJingleCallStackCall] peerConnectionShouldNegotiate");
+    
+    [self.peerConnectionDelegate peerConnectionShouldNegotiate:peerConnection];
 }
 
 // Called any time the ICEConnectionState changes.
@@ -542,6 +554,8 @@ didChangeIceConnectionState:(RTCIceConnectionState)newState
         default:
             break;
     }
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didChangeIceConnectionState:newState];
 }
 
 // Called any time the ICEGatheringState changes.
@@ -549,6 +563,8 @@ didChangeIceConnectionState:(RTCIceConnectionState)newState
 didChangeIceGatheringState:(RTCIceGatheringState)newState
 {
     NSLog(@"[MXJingleCallStackCall] didChangeIceGatheringState: %@", @(newState));
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didChangeIceGatheringState:newState];
 }
 
 // New Ice candidate have been found.
@@ -563,6 +579,8 @@ didGenerateIceCandidate:(RTCIceCandidate *)candidate
         [self.delegate callStackCall:self onICECandidateWithSdpMid:candidate.sdpMid sdpMLineIndex:candidate.sdpMLineIndex candidate:candidate.sdp];
         
     });
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didGenerateIceCandidate:candidate];
 }
 
 // Called when a group of local Ice candidates have been removed.
@@ -570,6 +588,8 @@ didGenerateIceCandidate:(RTCIceCandidate *)candidate
 didRemoveIceCandidates:(NSArray<RTCIceCandidate *> *)candidates;
 {
     NSLog(@"[MXJingleCallStackCall] didRemoveIceCandidates");
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didRemoveIceCandidates:candidates];
 }
 
 // New data channel has been opened.
@@ -577,6 +597,39 @@ didRemoveIceCandidates:(NSArray<RTCIceCandidate *> *)candidates;
     didOpenDataChannel:(RTCDataChannel*)dataChannel
 {
     NSLog(@"[MXJingleCallStackCall] didOpenDataChannel");
+    
+    [self.peerConnectionDelegate peerConnection:peerConnection didOpenDataChannel:dataChannel];
+}
+
+/** Called any time the IceConnectionState changes following standardized
+ * transition. */
+- (void)peerConnection:(RTCPeerConnection *)peerConnection
+didChangeStandardizedIceConnectionState:(RTCIceConnectionState)newState {
+    [self.peerConnectionDelegate peerConnection:peerConnection didChangeStandardizedIceConnectionState:newState];
+}
+
+/** Called any time the PeerConnectionState changes. */
+- (void)peerConnection:(RTCPeerConnection *)peerConnection
+didChangeConnectionState:(RTCPeerConnectionState)newState {
+    [self.peerConnectionDelegate peerConnection:peerConnection didChangeConnectionState:newState];
+}
+
+- (void)peerConnection:(RTCPeerConnection *)peerConnection
+didStartReceivingOnTransceiver:(RTCRtpTransceiver *)transceiver {
+    [self.peerConnectionDelegate peerConnection:peerConnection didStartReceivingOnTransceiver:transceiver];
+}
+
+/** Called when the selected ICE candidate pair is changed. */
+- (void)peerConnection:(RTCPeerConnection *)peerConnection
+    didChangeLocalCandidate:(RTCIceCandidate *)local
+            remoteCandidate:(RTCIceCandidate *)remote
+             lastReceivedMs:(int)lastDataReceivedMs
+          changeReason:(NSString *)reason {
+    [self.peerConnectionDelegate peerConnection:peerConnection
+                        didChangeLocalCandidate:local
+                                remoteCandidate:remote
+                                 lastReceivedMs:lastDataReceivedMs
+                                   changeReason:reason];
 }
 
 
