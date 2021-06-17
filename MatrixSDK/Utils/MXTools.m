@@ -293,6 +293,10 @@ NSCharacterSet *uriComponentCharset;
     {
         reason = MXCallHangupReasonUserHangup;
     }
+    else if ([reasonString isEqualToString:kMXCallHangupReasonStringUserBusy])
+    {
+        reason = MXCallHangupReasonUserBusy;
+    }
     else if ([reasonString isEqualToString:kMXCallHangupReasonStringIceFailed])
     {
         reason = MXCallHangupReasonIceFailed;
@@ -325,6 +329,9 @@ NSCharacterSet *uriComponentCharset;
     {
         case MXCallHangupReasonUserHangup:
             string = kMXCallHangupReasonStringUserHangup;
+            break;
+        case MXCallHangupReasonUserBusy:
+            string = kMXCallHangupReasonStringUserBusy;
             break;
         case MXCallHangupReasonIceFailed:
             string = kMXCallHangupReasonStringIceFailed;

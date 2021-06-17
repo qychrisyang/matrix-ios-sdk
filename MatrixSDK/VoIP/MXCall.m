@@ -1301,6 +1301,9 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
                             _endReason = MXCallEndReasonRemoteHangup;
                         }
                         break;
+                    case MXCallHangupReasonUserBusy:
+                        _endReason = MXCallEndReasonRemoteLineBusy;
+                        break;
                     case MXCallHangupReasonIceFailed:
                     case MXCallHangupReasonIceTimeout:
                     case MXCallHangupReasonUserMediaFailed:
