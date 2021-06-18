@@ -419,6 +419,7 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
                                   @"call_id": _callId,
                                   @"version": kMXCallVersion,
                                   @"party_id": self.partyId,
+                                  @"caller_id": self.callerId,
                                   @"isVideo": @(_isVideoCall)
                                   };
         
@@ -452,6 +453,7 @@ NSString *const kMXCallSupportsTransferringStatusDidChange = @"kMXCallSupportsTr
             @"call_id": _callId,
             @"version": kMXCallVersion,
             @"party_id": self.partyId,
+            @"caller_id": self.callerId,
             @"isVideo": @(_isVideoCall),
             @"reason": [MXTools callHangupReasonString:reason]
         }];
