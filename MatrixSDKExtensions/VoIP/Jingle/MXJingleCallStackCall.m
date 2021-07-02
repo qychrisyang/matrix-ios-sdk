@@ -223,6 +223,7 @@ NSString *const kMXJingleCallWebRTCMainStreamID = @"userMedia";
 
     // The libjingle call object can now be created
     peerConnection = [peerConnectionFactory peerConnectionWithConfiguration:configuration constraints:constraints delegate:self];
+    [peerConnection setBweMinBitrateBps:nil currentBitrateBps:nil maxBitrateBps:@(1000000)];
 }
 
 - (void)handleRemoteCandidate:(NSDictionary<NSString *, NSObject *> *)candidate
